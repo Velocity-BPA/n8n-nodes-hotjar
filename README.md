@@ -8,391 +8,203 @@
 >
 > For licensing information, visit https://velobpa.com/licensing or contact licensing@velobpa.com.
 
-A comprehensive n8n community node for Hotjar, the behavior analytics and user feedback platform. This node enables workflow automation for surveys, feedback, heatmaps, session recordings, funnels, events, GDPR compliance, and organization management through Hotjar's REST API.
+A comprehensive n8n community node for integrating with Hotjar's user behavior analytics platform. This node provides access to 6 core resources including sites, surveys, recordings, heatmaps, and data subject management capabilities, enabling automated workflows for user experience optimization and analytics data collection.
 
-![n8n](https://img.shields.io/badge/n8n-community--node-orange)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![n8n Community Node](https://img.shields.io/badge/n8n-Community%20Node-blue)
 ![License](https://img.shields.io/badge/license-BSL--1.1-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
+![Hotjar API](https://img.shields.io/badge/Hotjar-API%20v1-orange)
+![Analytics](https://img.shields.io/badge/Analytics-User%20Behavior-purple)
+![GDPR Ready](https://img.shields.io/badge/GDPR-Compliant-green)
 
 ## Features
 
-- **10 Resources** with 60+ operations for complete Hotjar integration
-- **Survey Management**: Create, manage, publish surveys and export responses
-- **Feedback Collection**: Access and manage feedback widget data
-- **Session Recordings**: Search, filter, tag, and share session recordings
-- **Heatmaps**: Create, manage, and retrieve click/scroll/move heatmap data
-- **Funnels**: Create conversion funnels and analyze drop-off rates
-- **Events**: Track and analyze custom events
-- **Site Management**: Full site lifecycle management
-- **GDPR Compliance**: User lookup, deletion, and privacy compliance tools
-- **Organization Management**: Team members, roles, and API key management
-- **Trigger Node**: Webhook-based triggers for real-time event handling
-- **OAuth2 Authentication**: Secure client credentials flow
-- **Cursor-based Pagination**: Efficient handling of large datasets
-- **Rate Limiting**: Built-in support for Hotjar's API limits (3000 req/min)
+- **Site Management** - Create, update, and manage Hotjar site configurations and tracking settings
+- **Survey Operations** - Automate survey creation, deployment, and response collection workflows
+- **Recording Analysis** - Access and process user session recordings with filtering and export capabilities
+- **Heatmap Data** - Retrieve heatmap analytics data for page optimization and user behavior insights
+- **Response Processing** - Extract and analyze survey responses with automatic data transformation
+- **GDPR Compliance** - Manage data subject requests, user data deletion, and privacy compliance workflows
+- **Bulk Operations** - Process multiple analytics records efficiently with batch operations
+- **Real-time Integration** - Connect Hotjar insights to other tools in your analytics and optimization stack
 
 ## Installation
 
 ### Community Nodes (Recommended)
 
 1. Open n8n
-2. Go to **Settings** > **Community Nodes**
-3. Select **Install**
+2. Go to **Settings** → **Community Nodes**
+3. Click **Install a community node**
 4. Enter `n8n-nodes-hotjar`
 5. Click **Install**
 
 ### Manual Installation
 
 ```bash
+cd ~/.n8n
 npm install n8n-nodes-hotjar
 ```
 
 ### Development Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/Velocity-BPA/n8n-nodes-hotjar.git
 cd n8n-nodes-hotjar
-
-# Install dependencies
 npm install
-
-# Build the project
 npm run build
-
-# Create symlink to n8n custom nodes directory
 mkdir -p ~/.n8n/custom
 ln -s $(pwd) ~/.n8n/custom/n8n-nodes-hotjar
-
-# Restart n8n
 n8n start
 ```
 
 ## Credentials Setup
 
-This node uses OAuth2 client credentials flow for authentication.
-
-### Getting API Credentials
-
-1. Log in to your [Hotjar account](https://insights.hotjar.com)
-2. Navigate to **Account Settings** > **API Keys**
-3. Click **Create API Key**
-4. Copy the **Client ID** and **Client Secret**
-
-### Configuring in n8n
-
-| Field | Description |
-|-------|-------------|
-| Client ID | Your Hotjar API Client ID |
-| Client Secret | Your Hotjar API Client Secret |
+| Field | Description | Required |
+|-------|-------------|----------|
+| API Key | Your Hotjar API key from account settings | Yes |
+| Base URL | Hotjar API base URL (auto-configured) | No |
 
 ## Resources & Operations
 
-### Survey
+### 1. Site
 
 | Operation | Description |
 |-----------|-------------|
-| List | List all surveys for a site |
-| Get | Get survey details and configuration |
-| Create | Create a new survey |
-| Update | Update survey settings |
-| Delete | Delete a survey |
-| Publish | Publish survey to site |
-| Unpublish | Remove survey from site |
-| Duplicate | Clone an existing survey |
-| Get Analytics | Get survey performance metrics |
-| List Questions | Get all questions in a survey |
+| Create | Create a new site configuration in Hotjar |
+| Get | Retrieve site details and configuration |
+| Get All | List all sites in your Hotjar account |
+| Update | Modify site settings and configuration |
+| Delete | Remove a site from Hotjar |
 
-### Survey Response
+### 2. Survey
 
 | Operation | Description |
 |-----------|-------------|
-| List | List survey responses with pagination |
-| Get | Get specific response details |
-| Export | Export all responses for a survey |
-| Delete | Delete a specific response |
-| Get Trends | Get response trends over time |
-| Bulk Export | Export responses for multiple surveys |
-| Filter | Get responses matching criteria |
+| Create | Create a new survey with questions and targeting |
+| Get | Retrieve survey configuration and settings |
+| Get All | List all surveys for a site |
+| Update | Modify survey questions, targeting, or status |
+| Delete | Remove a survey |
+| Start | Activate a survey for data collection |
+| Stop | Pause or deactivate a survey |
 
-### Site
-
-| Operation | Description |
-|-----------|-------------|
-| List | List all sites in organization |
-| Get | Get site details |
-| Create | Add a new site |
-| Update | Update site settings |
-| Delete | Remove a site |
-| Get Settings | Get tracking configuration |
-| Update Settings | Update tracking settings |
-| Verify | Check site installation status |
-
-### User (GDPR)
+### 3. Survey Response
 
 | Operation | Description |
 |-----------|-------------|
-| Lookup | Find user by identifier |
-| Lookup by Email | Find user by email address |
-| Lookup by User ID | Find user by custom user ID |
-| Delete | Request user data deletion |
-| Bulk Delete | Batch delete user data |
-| Get Deletion Status | Check deletion request status |
-| List Deletion Requests | Get all deletion requests |
-| Cancel Deletion | Cancel a pending deletion request |
+| Get | Retrieve a specific survey response |
+| Get All | Fetch all responses for a survey with filtering |
+| Export | Export survey responses in various formats |
+| Analyze | Get aggregated response analytics and insights |
 
-### Recording
+### 4. Recording
 
 | Operation | Description |
 |-----------|-------------|
-| List | List session recordings |
-| Get | Get recording details |
-| Delete | Delete a recording |
-| Get Playback URL | Get recording playback URL |
-| Get Events | Get events in a recording |
-| Search | Search recordings by criteria |
-| Add Tag | Tag a recording |
-| Remove Tag | Remove tag from recording |
-| Share | Generate shareable link |
+| Get | Retrieve a specific user session recording |
+| Get All | List recordings with filtering by date, page, or user |
+| Download | Download recording files for offline analysis |
+| Get Insights | Extract key insights and events from recordings |
+| Filter | Apply advanced filters to recording datasets |
 
-### Heatmap
+### 5. Heatmap
 
 | Operation | Description |
 |-----------|-------------|
-| List | List all heatmaps |
-| Get | Get heatmap details |
-| Create | Create new heatmap |
-| Update | Update heatmap settings |
-| Delete | Delete a heatmap |
-| Get Data | Get click/scroll/move data |
-| Get Screenshot | Get page screenshot |
-| Refresh | Regenerate heatmap data |
+| Get | Retrieve heatmap data for a specific page |
+| Get All | List all heatmaps for a site |
+| Generate | Create new heatmap analysis |
+| Export | Export heatmap data for external analysis |
+| Compare | Compare heatmap data across different time periods |
 
-### Feedback
+### 6. Data Subject
 
 | Operation | Description |
 |-----------|-------------|
-| List | List incoming feedback |
-| Get | Get feedback details |
-| Delete | Delete feedback item |
-| Export | Export feedback data |
-| Get Trends | Get feedback trends over time |
-| Get Widget Config | Get widget configuration |
-| Update Widget | Update widget settings |
-
-### Funnel
-
-| Operation | Description |
-|-----------|-------------|
-| List | List all funnels |
-| Get | Get funnel details |
-| Create | Create conversion funnel |
-| Update | Update funnel steps |
-| Delete | Delete a funnel |
-| Get Analytics | Get funnel conversion data |
-| Get Recordings | Get recordings for a funnel step |
-
-### Event
-
-| Operation | Description |
-|-----------|-------------|
-| List | List tracked events |
-| Get | Get event details |
-| Get Analytics | Get event occurrence data |
-| Search Recordings | Find recordings containing an event |
-
-### Organization
-
-| Operation | Description |
-|-----------|-------------|
-| Get | Get organization details |
-| List Members | List team members |
-| Invite Member | Invite new team member |
-| Update Member Role | Change member permissions |
-| Remove Member | Remove team member |
-| List API Keys | List all API keys |
-| Create API Key | Generate new API key |
-| Revoke API Key | Revoke an API key |
-
-## Trigger Node: Hotjar Trigger
-
-Webhook-based trigger for real-time Hotjar events.
-
-| Event | Description |
-|-------|-------------|
-| survey.response.created | New survey response received |
-| feedback.received | New feedback submitted |
-| recording.completed | Recording session ended |
-| user.deletion.completed | User deletion finished |
-| heatmap.data.ready | Heatmap data generated |
-
-**Note**: Configure the webhook URL in your Hotjar dashboard. Some events may require an Enterprise plan.
+| Request Deletion | Submit GDPR data deletion request |
+| Get Request Status | Check status of data subject requests |
+| Export Data | Export all data associated with a data subject |
+| Anonymize | Anonymize user data while preserving analytics value |
 
 ## Usage Examples
 
-### Export Survey Responses
-
 ```javascript
-// Export all survey responses for a specific survey
+// Get all survey responses from the last 30 days
 {
-  "resource": "response",
-  "operation": "export",
-  "siteId": "123456",
-  "surveyId": "789",
-  "returnAll": true,
+  "resource": "surveyResponse",
+  "operation": "getAll",
+  "surveyId": "12345",
   "filters": {
-    "dateFrom": "2024-01-01T00:00:00Z",
-    "dateTo": "2024-01-31T23:59:59Z"
+    "dateFrom": "2024-01-01",
+    "dateTo": "2024-01-31",
+    "limit": 100
   }
 }
 ```
 
-### Create a Survey
-
 ```javascript
-// Create a new survey with questions
+// Create a new NPS survey
 {
   "resource": "survey",
   "operation": "create",
-  "siteId": "123456",
-  "name": "Customer Satisfaction Survey",
-  "questions": "[{\"type\": \"rating\", \"text\": \"How satisfied are you?\"}]"
-}
-```
-
-### GDPR User Lookup and Delete
-
-```javascript
-// Look up a user by email
-{
-  "resource": "user",
-  "operation": "lookupByEmail",
-  "siteId": "123456",
-  "email": "user@example.com"
-}
-
-// Request user deletion
-{
-  "resource": "user",
-  "operation": "delete",
-  "siteId": "123456",
-  "userId": "user_abc123",
-  "confirm": true
-}
-```
-
-### Search and Tag Recordings
-
-```javascript
-// Search recordings by device and date
-{
-  "resource": "recording",
-  "operation": "search",
-  "siteId": "123456",
-  "returnAll": false,
-  "limit": 50,
-  "filters": {
-    "device": "mobile",
-    "dateFrom": "2024-01-01T00:00:00Z",
-    "minDuration": 30
+  "siteId": "98765",
+  "surveyData": {
+    "name": "Customer Satisfaction Q1 2024",
+    "type": "nps",
+    "question": "How likely are you to recommend our product?",
+    "targeting": {
+      "pages": ["checkout", "thank-you"],
+      "percentage": 25
+    }
   }
 }
-
-// Add a tag to a recording
-{
-  "resource": "recording",
-  "operation": "addTag",
-  "siteId": "123456",
-  "recordingId": "rec_xyz789",
-  "tag": "high-value-user"
-}
 ```
-
-### Create a Conversion Funnel
 
 ```javascript
-// Create a checkout funnel
+// Export heatmap data for homepage optimization
 {
-  "resource": "funnel",
-  "operation": "create",
-  "siteId": "123456",
-  "name": "Checkout Funnel",
-  "steps": "[{\"name\": \"Cart\", \"url_pattern\": \"/cart\"}, {\"name\": \"Checkout\", \"url_pattern\": \"/checkout\"}, {\"name\": \"Thank You\", \"url_pattern\": \"/thank-you\"}]"
+  "resource": "heatmap",
+  "operation": "export",
+  "siteId": "98765",
+  "pageUrl": "https://example.com",
+  "dateRange": {
+    "start": "2024-01-01",
+    "end": "2024-01-31"
+  },
+  "format": "json"
 }
 ```
 
-## Hotjar Concepts
-
-### Sites
-A site in Hotjar represents a website or web application you're tracking. Each site has a unique ID and tracking code.
-
-### Surveys
-Surveys (also known as polls or feedback widgets) allow you to collect direct feedback from users. Types include:
-- **Poll**: Quick single-question feedback
-- **Survey**: Multi-question surveys
-- **Feedback**: Open-ended feedback widgets
-
-### Session Recordings
-Session recordings capture user interactions including mouse movements, clicks, scrolls, and form interactions. Recordings can be filtered by device type, browser, country, duration, and URL patterns.
-
-### Heatmaps
-Heatmaps visualize user behavior on pages:
-- **Click maps**: Show where users click
-- **Move maps**: Show mouse movement patterns
-- **Scroll maps**: Show how far users scroll
-
-### Funnels
-Funnels track user journeys through defined steps, helping identify where users drop off in conversion processes.
-
-### Events
-Custom events tracked via Hotjar's JavaScript API, useful for tracking specific user actions and correlating with recordings.
-
-## API Rate Limits
-
-Hotjar API allows:
-- **3000 requests per minute** (50 requests per second)
-- The node automatically handles rate limit responses (HTTP 429)
+```javascript
+// Process GDPR deletion request
+{
+  "resource": "dataSubject",
+  "operation": "requestDeletion",
+  "userIdentifier": "user@example.com",
+  "dataTypes": ["recordings", "surveys", "heatmaps"],
+  "reason": "User requested account deletion"
+}
+```
 
 ## Error Handling
 
-The node handles common API errors:
-
-| Error Code | Description |
-|------------|-------------|
-| 400 | Bad request - check your parameters |
-| 401 | Unauthorized - verify credentials |
-| 403 | Forbidden - insufficient permissions |
-| 404 | Not found - resource doesn't exist |
-| 429 | Rate limited - wait before retrying |
-| 500 | Server error - retry later |
-
-## Security Best Practices
-
-1. **Store credentials securely**: Use n8n's credential management
-2. **Minimal permissions**: Only request necessary API scopes
-3. **GDPR compliance**: Use the User resource for privacy requests
-4. **Audit logging**: Log access to user data
+| Error | Description | Solution |
+|-------|-------------|----------|
+| 401 Unauthorized | Invalid API key or expired token | Verify API key in credentials configuration |
+| 403 Forbidden | Insufficient permissions for operation | Check account permissions and plan limits |
+| 404 Not Found | Site, survey, or resource doesn't exist | Verify resource IDs and site configuration |
+| 429 Rate Limited | Too many API requests | Implement delays between requests or reduce frequency |
+| 500 Internal Error | Hotjar service unavailable | Retry operation after delay or check Hotjar status |
+| Network Timeout | Connection timeout to Hotjar API | Check network connectivity and increase timeout |
 
 ## Development
 
 ```bash
-# Install dependencies
 npm install
-
-# Build
 npm run build
-
-# Run tests
 npm test
-
-# Run tests with coverage
-npm run test:coverage
-
-# Lint
 npm run lint
-
-# Format code
-npm run format
+npm run dev
 ```
 
 ## Author
@@ -409,32 +221,24 @@ This n8n community node is licensed under the **Business Source License 1.1**.
 Permitted for personal, educational, research, and internal business use.
 
 ### Commercial Use
-Use of this node within any SaaS, PaaS, hosted platform, managed service,
-or paid automation offering requires a commercial license.
+Use of this node within any SaaS, PaaS, hosted platform, managed service, or paid automation offering requires a commercial license.
 
-For licensing inquiries:
-**licensing@velobpa.com**
+For licensing inquiries: **licensing@velobpa.com**
 
 See [LICENSE](LICENSE), [COMMERCIAL_LICENSE.md](COMMERCIAL_LICENSE.md), and [LICENSING_FAQ.md](LICENSING_FAQ.md) for details.
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+Contributions are welcome! Please ensure:
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+1. Code follows existing style conventions
+2. All tests pass (`npm test`)
+3. Linting passes (`npm run lint`)
+4. Documentation is updated for new features
+5. Commit messages are descriptive
 
 ## Support
 
-- **Documentation**: [Hotjar API Docs](https://developer.hotjar.com/docs)
 - **Issues**: [GitHub Issues](https://github.com/Velocity-BPA/n8n-nodes-hotjar/issues)
-- **Community**: [n8n Community Forum](https://community.n8n.io)
-
-## Acknowledgments
-
-- [Hotjar](https://www.hotjar.com) for their behavior analytics platform
-- [n8n](https://n8n.io) for the workflow automation platform
-- The n8n community for their support and feedback
+- **Hotjar API Documentation**: [developers.hotjar.com](https://developers.hotjar.com)
+- **Hotjar Community**: [help.hotjar.com](https://help.hotjar.com)
