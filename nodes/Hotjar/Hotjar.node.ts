@@ -61,6 +61,10 @@ export class Hotjar implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Data Subject',
+						value: 'dataSubject',
+					},
+					{
 						name: 'Event',
 						value: 'event',
 					},
@@ -102,6 +106,166 @@ export class Hotjar implements INodeType {
 					},
 				],
 				default: 'survey',
+			},
+			// Data Subject
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+					},
+				},
+				options: [
+					{
+						name: 'Create Deletion Request',
+						value: 'createDeletionRequest',
+						description: 'Submit GDPR data deletion request',
+						action: 'Create a deletion request',
+					},
+					{
+						name: 'Get All Deletion Requests',
+						value: 'getAllDeletionRequests',
+						description: 'List deletion requests',
+						action: 'Get all deletion requests',
+					},
+					{
+						name: 'Get Deletion Request',
+						value: 'getDeletionRequest',
+						description: 'Get deletion request status',
+						action: 'Get a deletion request',
+					},
+				],
+				default: 'createDeletionRequest',
+			},
+			{
+				displayName: 'Site ID',
+				name: 'siteId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['createDeletionRequest', 'getAllDeletionRequests', 'getDeletionRequest'],
+					},
+				},
+				default: '',
+				description: 'The ID of the site',
+			},
+			{
+				displayName: 'User ID',
+				name: 'userId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['createDeletionRequest'],
+					},
+				},
+				default: '',
+				description: 'The ID of the user for data deletion',
+			},
+			{
+				displayName: 'Deletion Type',
+				name: 'deletionType',
+				type: 'options',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['createDeletionRequest'],
+					},
+				},
+				options: [
+					{
+						name: 'Full',
+						value: 'full',
+					},
+					{
+						name: 'Partial',
+						value: 'partial',
+					},
+				],
+				default: 'full',
+				description: 'Type of data deletion to perform',
+			},
+			{
+				displayName: 'Request ID',
+				name: 'requestId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['getDeletionRequest'],
+					},
+				},
+				default: '',
+				description: 'The ID of the deletion request',
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['getAllDeletionRequests'],
+					},
+				},
+				default: 20,
+				description: 'Max number of results to return',
+			},
+			{
+				displayName: 'Offset',
+				name: 'offset',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['getAllDeletionRequests'],
+					},
+				},
+				default: 0,
+				description: 'Number of results to skip',
+			},
+			{
+				displayName: 'Status',
+				name: 'status',
+				type: 'options',
+				displayOptions: {
+					show: {
+						resource: ['dataSubject'],
+						operation: ['getAllDeletionRequests'],
+					},
+				},
+				options: [
+					{
+						name: 'All',
+						value: '',
+					},
+					{
+						name: 'Pending',
+						value: 'pending',
+					},
+					{
+						name: 'Processing',
+						value: 'processing',
+					},
+					{
+						name: 'Completed',
+						value: 'completed',
+					},
+					{
+						name: 'Failed',
+						value: 'failed',
+					},
+				],
+				default: '',
+				description: 'Filter by deletion request status',
 			},
 			// Survey
 			...surveyOperations,
@@ -171,6 +335,53 @@ export class Hotjar implements INodeType {
 		for (let i = 0; i < items.length; i++) {
 			try {
 				let responseData: IDataObject | IDataObject[] = {};
+
+				// Data Subject Operations (new from generated code)
+				if (resource === 'dataSubject') {
+					const siteId = this.getNodeParameter('siteId', i) as string;
+
+					if (operation === 'createDeletionRequest') {
+						const userId = this.getNodeParameter('userId', i) as string;
+						const deletionType = this.getNodeParameter('deletionType', i) as string;
+
+						responseData = await hotjarApiRequest.call(
+							this,
+							'POST',
+							`/sites/${siteId}/data-subjects/deletion-requests`,
+							{
+								user_id: userId,
+								deletion_type: deletionType,
+							},
+						);
+					}
+
+					if (operation === 'getAllDeletionRequests') {
+						const limit = this.getNodeParameter('limit', i) as number;
+						const offset = this.getNodeParameter('offset', i) as number;
+						const status = this.getNodeParameter('status', i) as string;
+
+						const query: IDataObject = { limit, offset };
+						if (status) query.status = status;
+
+						responseData = await hotjarApiRequest.call(
+							this,
+							'GET',
+							`/sites/${siteId}/data-subjects/deletion-requests`,
+							undefined,
+							query,
+						);
+					}
+
+					if (operation === 'getDeletionRequest') {
+						const requestId = this.getNodeParameter('requestId', i) as string;
+
+						responseData = await hotjarApiRequest.call(
+							this,
+							'GET',
+							`/sites/${siteId}/data-subjects/deletion-requests/${requestId}`,
+						);
+					}
+				}
 
 				// Survey Operations
 				if (resource === 'survey') {
@@ -1223,7 +1434,7 @@ export class Hotjar implements INodeType {
 					{ itemData: { item: i } },
 				);
 				returnData.push(...executionData);
-			} catch (error) {
+			} catch (error: any) {
 				if (this.continueOnFail()) {
 					const executionErrorData = this.helpers.constructExecutionMetaData(
 						this.helpers.returnJsonArray({ error: (error as Error).message }),
