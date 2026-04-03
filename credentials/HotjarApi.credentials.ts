@@ -18,23 +18,22 @@ export class HotjarApi implements ICredentialType {
 	documentationUrl = 'https://developer.hotjar.com/docs/getting-started';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Client ID',
-			name: 'clientId',
-			type: 'string',
-			default: '',
-			required: true,
-			description: 'The Client ID from your Hotjar API key pair',
-		},
-		{
-			displayName: 'Client Secret',
-			name: 'clientSecret',
+			displayName: 'API Key',
+			name: 'apiKey',
 			type: 'string',
 			typeOptions: {
 				password: true,
 			},
 			default: '',
 			required: true,
-			description: 'The Client Secret from your Hotjar API key pair',
+			description: 'API key for Hotjar. Generate one in your Hotjar dashboard under Organization settings > API access.',
+		},
+		{
+			displayName: 'Base URL',
+			name: 'baseUrl',
+			type: 'string',
+			default: 'https://insights.hotjar.com/api/v2',
+			description: 'Base URL for Hotjar API',
 		},
 	];
 
@@ -45,8 +44,8 @@ export class HotjarApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.hotjar.io',
-			url: '/v1/sites',
+			baseURL: 'https://insights.hotjar.com/api/v2',
+			url: '/sites',
 			method: 'GET',
 		},
 	};
